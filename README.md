@@ -264,9 +264,69 @@ real people, ranked by rating.
 
 ## Deliberately not built yet
 
-Auth, product claiming, payments, badges, tournaments, an API. Also see
-the "Explicitly scoped out" note at the bottom of this file for a few
-specific items from a source design doc that were intentionally deferred.
+Auth (beyond the admin dashboard), payments, badges, tournaments, a
+public API. Also see the "Explicitly scoped out" note at the bottom of
+this file for a few specific items from a source design doc that were
+intentionally deferred.
+
+### Product claiming, disputes, and verified battles (designed, not built)
+
+**The problem this solves:** anyone can currently add any product and
+put it in a battle — including a competitor's product the challenger
+doesn't control. There's no ownership model, no way for the real company
+to respond, and no recourse if a battle frames them unfairly. This
+matters more once the "Challenge a competitor" flow is used as a growth
+mechanic (see below) rather than an occasional feature, since it turns
+"unaware third party gets compared" from an edge case into the default
+outcome of the core acquisition loop.
+
+**Design (not implemented):**
+
+- `products.claim_status` (`unclaimed` | `claimed`), `claimed_by_email`,
+  `claimed_at`. Claiming reuses Supabase Auth already in the project —
+  a logged-in user can claim a product if their email's domain matches
+  the product's `website_url` domain. No new email-verification
+  infrastructure needed.
+- `battles.challenger_product_id` — which side initiated the battle, so
+  the app can show "You were challenged by X" to the other side. No cold
+  outreach/scraped-contact emailing — surfacing happens in-app only,
+  when the real founder eventually looks up their own product (which
+  the challenger's own distribution of the battle naturally drives).
+- A new `disputes` table (`battle_id`, `product_id` nullable, `reason`,
+  `reporter_email` nullable, `status`) — reportable by anyone, no
+  claiming or login required, feeding a new tab in the admin dashboard
+  (`pages/emmybund.js`).
+- **Tiered trust model**, not a single consent gate (a hard gate would
+  kill the challenge/growth mechanic entirely — no incumbent opts in to
+  being challenged):
+  1. **Unclaimed challenge** (default, unblocked): battle goes live
+     immediately, framed as a neutral head-to-head ("X vs Y — which
+     would you choose?"), not the adversarial "prove us wrong" dare.
+     Unclaimed side shows a visible, honest badge ("Y hasn't claimed
+     this profile yet"). Votes display live and real, but do NOT feed
+     the product's official Elo rating yet — the drama is real, the
+     leaderboard is protected. Dispute flag available immediately.
+  2. **Claimed mid-battle**: the challenged product's real owner claims
+     their listing, unlocking editing rights, a right-of-reply on that
+     battle, and future notifications. Votes start counting toward
+     their real rating from the claim moment forward (not retroactively
+     — replaying Elo history precisely was judged not worth the
+     complexity for v1).
+  3. **Verified battle** (both sides claimed): only here does the
+     sharper "we think X is better than Y, prove us wrong" framing
+     unlock in the Gemini prompt (`generateBattleQuestion` would take a
+     `bothClaimed` boolean). Worth its own "VERIFIED BATTLE" badge —
+     a battle both companies visibly opted into reads as more credible
+     to voters, not just safer.
+- Rate limit: block a second concurrent unclaimed challenge against the
+  same competitor, so one product can't get piled on with multiple
+  unflattering framings before its owner even knows Zoloop exists.
+
+**Why this is documented here instead of built:** it's a genuinely large
+feature (new table, tiered prompt logic, an Elo-update gate, new UI in
+three+ existing pages) and touches the platform's core trust model —
+worth building deliberately in its own pass rather than folded into
+unrelated work.
 
 ## Recent changes (branding + hardening pass)
 
