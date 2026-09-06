@@ -11,11 +11,21 @@ import { getAvatarTint } from "./lib/categoryIcons";
 //   product_b: { id, name, slug, logo_url },
 // }
 //
-// mode: "full" (homepage hero, battle detail page — larger, richer
-// post-vote panel) or "compact" (Top 3 / Battles page grids — smaller,
-// and Share/Visit/Details are always visible rather than gated behind
-// voting first, since a listing page needs those actions reachable
-// without committing to a vote).
+// mode: "full" (battle detail page — larger, richer post-vote panel),
+// "compact" (Battles page grids — smaller, Share/Visit/Details always
+// visible rather than gated behind voting), or "featured" (homepage
+// Top 1/2/3 — full-size visuals like "full", but with compact's
+// always-visible action row instead of the post-vote-only panel, since
+// these are meant to be browsable showcase cards, not just a voting
+// widget).
+//
+// theme: optional { bg, border } override for the card's own
+// background/border color (medal-tinted Top 1/2/3 cards, per-battle
+// cool-tint cards on the Battles page). Doesn't affect product avatars,
+// which always use their own identity-based tint regardless of theme.
+//
+// badge: optional { label, bg, text, extra } rendered as a small ribbon
+// in the card's top-left corner (e.g. "1ST" plus a category chip).
 
 const EARLY_RESULT_THRESHOLD = 20; // below this many votes, flag result as early/unreliable
 const VOTED_STORAGE_PREFIX = "zl_voted_";
@@ -87,8 +97,14 @@ function Avatar({ product, size, tint }) {
   );
 }
 
-export default function BattleCard({ battle, mode = "full" }) {
+export default function BattleCard({ battle, mode = "full", theme = null, badge = null }) {
   const compact = mode === "compact";
+  const featured = mode === "featured";
+  // "featured" (homepage Top 1/2/3) is full-size like "full" mode, but
+  // shares "compact" mode's always-visible Share/Visit/Details row
+  // instead of gating those behind voting — these are meant to be
+  // browsable showcase cards, not just a voting widget.
+  const alwaysShowActions = compact || featured;
   const [votesA, setVotesA] = useState(battle?.votes_a ?? 0);
   const [voted, setVoted] = useState(false);
   const [votedSide, setVotedSide] = useState(null); // "a" | "b" | null
@@ -215,12 +231,23 @@ export default function BattleCard({ battle, mode = "full" }) {
   const pctSize = compact ? "text-xl" : "text-3xl md:text-4xl";
 
   return (
-    <div className={compact ? "" : "mx-5 mb-6 md:mx-8"}>
+    <div className={compact || featured ? "" : "mx-5 mb-6 md:mx-8"}>
       <div
-        className={`mx-auto rounded-2xl border border-line bg-white ${cardShadow} ${
+        className={`relative mx-auto rounded-2xl border bg-white ${cardShadow} ${
           compact ? "p-3" : "p-4 md:max-w-xl"
-        }`}
+        } ${theme ? "" : "border-line"}`}
+        style={theme ? { borderColor: theme.border, background: theme.bg } : undefined}
       >
+        {badge && (
+          <div
+            className="absolute -top-3 left-4 z-10 flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[10px] font-bold shadow-[2px_2px_0_#0B0C10]"
+            style={{ background: badge.bg, color: badge.text }}
+          >
+            {badge.label}
+            {badge.extra}
+          </div>
+        )}
+
         {/* status row — only for ended battles now. A still-live battle
         showed "LIVE BATTLE · N votes" here before, which was redundant
         with the percentages/vote counts already visible below; removed.
@@ -313,11 +340,15 @@ export default function BattleCard({ battle, mode = "full" }) {
           </div>
         )}
 
-        {/* Compact mode (Battles page / Top 3): Share, Visit, and Details
-        are ALWAYS available here, not gated behind voting first — a
-        listing page needs those actions reachable without forcing a
-        commitment to vote. */}
-        {compact && (
+        {alwaysShowActions && error && (
+          <div className="mt-2 text-center font-mono text-[10px] text-cornerA">{error}</div>
+        )}
+
+        {/* Compact/featured modes: Share, Visit, and Details are ALWAYS
+        available here, not gated behind voting first — a listing page
+        (or a browsable showcase card) needs those actions reachable
+        without forcing a commitment to vote. */}
+        {alwaysShowActions && (
           <div className="mt-3 flex flex-wrap gap-1.5 border-t border-line pt-3">
             <a
               href={`/api/click?battleId=${battle.id}&productId=${battle.product_a.id}`}
@@ -353,11 +384,11 @@ export default function BattleCard({ battle, mode = "full" }) {
         )}
       </div>
 
-      {!compact && error && (
+      {!alwaysShowActions && error && (
         <div className="mt-2 text-center font-mono text-[10px] text-cornerA">{error}</div>
       )}
 
-      {!compact && voted && !error && (
+      {!alwaysShowActions && voted && !error && (
         <div className="mx-auto mt-3 rounded-2xl border border-line bg-paper p-4 md:max-w-xl">
           <div className="text-center text-sm font-bold text-ink">
             You voted for {votedSide === "a" ? battle.product_a.name : battle.product_b.name}

@@ -162,7 +162,7 @@ export default function LeaderboardTable({ products, mode = "compact", form = {}
           <Link
             key={p.id}
             href={`/product/${p.slug}`}
-            className={`flex items-center gap-3 rounded-xl border bg-white px-3 py-3 shadow-[3px_3px_0_#0B0C10] transition-colors hover:border-cornerA ${
+            className={`flex items-center gap-3 rounded-xl border bg-white px-3 py-3 shadow-[3px_3px_0_#0B0C10] transition-colors hover:border-cornerB ${
               tier ? `border-line ring-1 ${tier.ring}` : "border-line"
             }`}
           >
