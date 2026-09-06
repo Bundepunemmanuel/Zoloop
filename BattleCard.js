@@ -148,11 +148,22 @@ export default function BattleCard({ battle, mode = "full", theme = null, badge 
   const endedDateLabel = hasEnded ? formatEndedDate(battle.ends_at) : null;
   const isEarlyResult = !hasEnded && total > 0 && total < EARLY_RESULT_THRESHOLD;
 
+  // BUG FIX: this used to ONLY trust battle.winner_id from the database,
+  // showing "Tied — no winner" any time that column was null — even for
+  // battles with an obvious, un-tied vote majority (winner_id can be
+  // null on completed battles whose close-out never ran, e.g. older
+  // seeded/test data). Now it falls back to computing the winner from
+  // the actual current vote totals whenever winner_id isn't set but the
+  // votes clearly aren't tied.
   const winnerProduct =
     battle.winner_id === battle.product_a.id
       ? battle.product_a
       : battle.winner_id === battle.product_b.id
       ? battle.product_b
+      : battle.winner_id === null && votesA !== votesB
+      ? votesA > votesB
+        ? battle.product_a
+        : battle.product_b
       : null;
 
   const tintA = getAvatarTint(battle.product_a.name);
