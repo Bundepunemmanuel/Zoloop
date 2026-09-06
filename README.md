@@ -328,6 +328,60 @@ three+ existing pages) and touches the platform's core trust model —
 worth building deliberately in its own pass rather than folded into
 unrelated work.
 
+### Becoming an ongoing platform, not a "launch once and forget" directory (designed, not built)
+
+**The problem this solves:** a launch directory's core value (a badge,
+one day of traffic) has a hard expiration date built into the format —
+there's no mechanic pulling a founder back tomorrow. Zoloop's model is
+*structurally* capable of an ongoing relationship instead (an evolving
+rating, a re-challengeable leaderboard position), but right now nothing
+actually exercises that — a battle ends and nothing brings anyone back.
+Without the mechanics below, Zoloop risks being "launch once and forget"
+with different packaging, not a real improvement on the category.
+
+**Design (not implemented), roughly in build-priority order:**
+
+1. **Evergreen search value on product pages.** A product's profile
+   (`pages/product/[slug].js`) should accumulate a permanent, growing
+   record across every completed battle, making it a genuinely useful
+   page to land on from search a year later — not just traffic the day
+   a battle is shared. Needs: `sitemap.xml`, per-page meta descriptions,
+   structured data (schema.org) — none of which exist yet.
+2. **Pull-back mechanics** — the biggest gap versus "ongoing" being real
+   rather than theoretical:
+   - Rematch requests (a losing product can challenge again, once,
+     with real stakes)
+   - Live momentum alerts during an active battle ("Claude just took
+     the lead") — gives people a reason to check back mid-battle
+   - "Notify me" when a product someone voted for or claimed gets
+     challenged again
+3. **Leaderboard with real memory**, not a daily reset. Surface
+   streaks, rating trajectories over time, "biggest mover this week" —
+   using the rating history that already exists in `rating_history`
+   rather than only ever showing a flat current snapshot.
+4. **Solve supply the way directories solve it — constantly.** Directory
+   sites never run dry because there's always something new tomorrow;
+   Zoloop's supply is bounded by real rivalries existing. Make battle
+   creation (the Challenge mechanic, see the claiming/disputes section
+   above) as easy and habitual for a founder as a directory submission,
+   and proactively suggest rematches/new challenges to founders whose
+   last battle ended a while ago, rather than waiting for them to think
+   of it.
+5. **Let founders build ON Zoloop, not just visit it once** — an
+   embeddable live battle widget for a founder's own landing page (which
+   also functions as a real, legitimate backlink back to Zoloop, unlike
+   the click-tracking redirect discussed elsewhere in this file), plus a
+   real founder-facing dashboard (separate from `pages/emmybund.js`)
+   showing their own product's stats over time.
+6. **All of this depends on the trust foundation above actually
+   shipping first.** A directory's badge is a one-day claim nobody has
+   to trust for long; an ongoing leaderboard makes a claim people keep
+   watching — which means claiming, disputes, and retiring the seeding
+   vote/click boost (see `lib/requireAdmin.js` env docs and the
+   migration 7 notes above) matter *more* here, not less, once the
+   platform is meant to be durable rather than a one-shot directory
+   alternative.
+
 ## Recent changes (branding + hardening pass)
 
 - **Branding**: colors (`tailwind.config.js` → `cornerA` / `cornerB`) now
