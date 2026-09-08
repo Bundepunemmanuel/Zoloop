@@ -7,17 +7,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Palette pulled directly from the Zoloop logo (orange + purple Z).
-        ink: "#0B0C10",
-        inkCard: "#15161C",
-        line: "#26272F",
-        paper: "#F2EEE4",
-        cornerA: "#FE4C12",
-        cornerADim: "#2F1510",
-        cornerB: "#754BF6",
-        cornerBDim: "#1A1532",
-        gold: "#E8B84B",
-        grayText: "#82838C",
+        // Palette shifted from the original orange/purple "Zoloop logo"
+        // scheme to a calmer terracotta/sage/sand palette (approved via
+        // mockup). Token NAMES are kept as-is (cornerA, cornerB, paper,
+        // etc.) rather than renamed, since renaming would mean touching
+        // every className referencing them across the whole codebase for
+        // zero functional benefit — only the hex values changed.
+        ink: "#2B2620",
+        inkCard: "#3A342C",
+        line: "#DCCFB8",
+        paper: "#FBF6EF",
+        cornerA: "#C08552", // terracotta (was orange #FE4C12)
+        cornerADim: "#3D2A1A",
+        cornerB: "#6B8F71", // muted sage (was purple #754BF6)
+        cornerBDim: "#1F2A20",
+        gold: "#E8B84B", // unchanged — kept for medal badges specifically
+        grayText: "#8A8072",
       },
       fontFamily: {
         display: ["Anton", "sans-serif"],

@@ -237,7 +237,7 @@ export default function BattleCard({ battle, mode = "full", theme = null, badge 
     }
   }
 
-  const cardShadow = compact ? "shadow-[3px_3px_0_#0B0C10]" : "shadow-[4px_4px_0_#0B0C10]";
+  const cardShadow = compact ? "shadow-[3px_3px_0_#2B2620]" : "shadow-[4px_4px_0_#2B2620]";
   const avatarSize = compact ? "h-10 w-10 text-sm" : "h-14 w-14 text-xl md:h-16 md:w-16";
   const pctSize = compact ? "text-xl" : "text-3xl md:text-4xl";
 
@@ -251,7 +251,7 @@ export default function BattleCard({ battle, mode = "full", theme = null, badge 
       >
         {badge && (
           <div
-            className="absolute -top-3 left-4 z-10 flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[10px] font-bold shadow-[2px_2px_0_#0B0C10]"
+            className="absolute -top-3 left-4 z-10 flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[10px] font-bold shadow-[2px_2px_0_#2B2620]"
             style={{ background: badge.bg, color: badge.text }}
           >
             {badge.label}
