@@ -50,7 +50,7 @@ export default function LeaderboardTable({ products, mode = "compact", form = {}
 
   if (mode === "table") {
     return (
-      <div className="overflow-x-auto rounded-xl border border-line bg-white shadow-[4px_4px_0_#0B0C10]">
+      <div className="overflow-x-auto rounded-xl border border-line bg-white shadow-[4px_4px_0_#2B2620]">
         <table className="w-full min-w-[560px] border-collapse text-left">
           <thead>
             <tr className="border-b border-line font-mono text-[10px] uppercase tracking-wide text-grayText">
@@ -162,7 +162,7 @@ export default function LeaderboardTable({ products, mode = "compact", form = {}
           <Link
             key={p.id}
             href={`/product/${p.slug}`}
-            className={`flex items-center gap-3 rounded-xl border bg-white px-3 py-3 shadow-[3px_3px_0_#0B0C10] transition-colors hover:border-cornerB ${
+            className={`flex items-center gap-3 rounded-xl border bg-white px-3 py-3 shadow-[3px_3px_0_#2B2620] transition-colors hover:border-cornerB ${
               tier ? `border-line ring-1 ${tier.ring}` : "border-line"
             }`}
           >
