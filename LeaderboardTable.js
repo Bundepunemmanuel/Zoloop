@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CategoryIcon, getAvatarTint } from "./lib/categoryIcons";
+import { CategoryIcon, getProductTint } from "./lib/categoryIcons";
 import { logError } from "./lib/logger";
 
 const TIERS = {
@@ -76,7 +76,7 @@ export default function LeaderboardTable({ products, mode = "compact", form = {}
               const battleCount = (p.wins ?? 0) + (p.losses ?? 0);
               const winRate = battleCount > 0 ? Math.round((p.wins / battleCount) * 100) : 0;
               const tier = TIERS[rank];
-              const tint = getAvatarTint(p.name);
+              const tint = getProductTint(p);
 
               return (
                 <tr
@@ -156,7 +156,7 @@ export default function LeaderboardTable({ products, mode = "compact", form = {}
         const winRate = battleCount > 0 ? Math.round((p.wins / battleCount) * 100) : 0;
         const tier = TIERS[rank];
         const confidence = getConfidence(battleCount);
-        const tint = getAvatarTint(p.name);
+        const tint = getProductTint(p);
 
         return (
           <Link

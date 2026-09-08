@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { logError, logWarn } from "./lib/logger";
-import { getAvatarTint } from "./lib/categoryIcons";
+import { getProductTint } from "./lib/categoryIcons";
 
 // battle shape expected:
 // {
@@ -166,8 +166,8 @@ export default function BattleCard({ battle, mode = "full", theme = null, badge 
         : battle.product_b
       : null;
 
-  const tintA = getAvatarTint(battle.product_a.name);
-  const tintB = getAvatarTint(battle.product_b.name);
+  const tintA = getProductTint(battle.product_a);
+  const tintB = getProductTint(battle.product_b);
 
   async function castVote(productId, side) {
     if (voted || voting || hasEnded) return;

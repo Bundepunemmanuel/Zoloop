@@ -296,3 +296,27 @@ alter table battles add column if not exists created_by text not null default 'u
 -- e.g. one IP behind an unusual number of distinct voter_hash values in
 -- a short window.
 alter table votes add column if not exists ip_hash text;
+
+-- ---------- migration 8: real brand-color extraction ----------
+-- Run on its own, safe to run any number of times.
+--
+-- brand_color: the actual dominant color pulled from a product's real
+-- logo image (via sharp's built-in stats().dominant — see
+-- lib/brandColor.js), NOT the earlier hash-based tint system
+-- (lib/categoryIcons.js's getAvatarTint/getCoolTint), which just assigns
+-- a color deterministically from a product's NAME with no relationship
+-- to what its logo actually looks like. This is the real "Pecan AI's
+-- page is green because Pecan's logo is green" effect.
+--
+-- brand_text_color: computed alongside brand_color — whichever of
+-- black/white reads legibly against it (a raw extracted color can come
+-- back very light or very dark, so this can't be assumed, it's computed
+-- per-product from the actual extracted color).
+--
+-- Both null for any product that predates this migration, or whose
+-- extraction failed, or that has no logo at all — the hash-based tint
+-- remains the fallback in all of those cases (see
+-- lib/categoryIcons.js's getProductTint, which is now the single
+-- resolver every page should call instead of getAvatarTint directly).
+alter table products add column if not exists brand_color text;
+alter table products add column if not exists brand_text_color text;
