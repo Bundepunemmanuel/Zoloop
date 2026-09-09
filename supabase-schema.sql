@@ -320,3 +320,20 @@ alter table votes add column if not exists ip_hash text;
 -- resolver every page should call instead of getAvatarTint directly).
 alter table products add column if not exists brand_color text;
 alter table products add column if not exists brand_text_color text;
+
+-- ---------- migration 9: Tavily search result caching ----------
+-- Run on its own, safe to run any number of times.
+--
+-- competitor_search_cache / competitor_search_cached_at: caches a
+-- product's Tavily search results on the product row itself, so
+-- re-triggering "suggest competitors" for the SAME product doesn't
+-- spend a fresh Tavily credit every time. Tavily's free tier is
+-- 1,000 credits/month, shared across every user hitting this feature —
+-- without caching, a handful of active testers repeatedly re-triggering
+-- suggestions for the same few products could burn the whole month's
+-- free quota in an afternoon. A product's real competitor set doesn't
+-- meaningfully change day to day, so a cache (see CACHE_TTL_DAYS in
+-- pages/api/submit-product.js) is a reasonable tradeoff, not a
+-- correctness compromise.
+alter table products add column if not exists competitor_search_cache jsonb;
+alter table products add column if not exists competitor_search_cached_at timestamptz;
